@@ -228,7 +228,7 @@ public class StartActivity extends AppCompatActivity{
 			CLog.e(TAG, "Error accessing file: " + e.getMessage());
 		}
 		String dir = FileUtil.getDirectoryPath(DIR, false);
-		this.sendBroadcast(new Intent(ACTION_MEDIA_SCANNER_SCAN_DIR, Uri.fromFile(new File(FileUtil.sdcard.createDir(DIR)))));
+		this.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(FileUtil.sdcard.createDir(DIR)))));
 	}
 
 }
