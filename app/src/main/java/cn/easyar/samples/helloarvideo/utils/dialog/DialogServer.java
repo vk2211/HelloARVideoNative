@@ -40,6 +40,7 @@ public class DialogServer {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                         mDialogInterface.OnDoalogDismiss(items[yourChoice]);
+                                                        yourChoice=0;
 
                                             }});
                         singleChoiceDialog.show();

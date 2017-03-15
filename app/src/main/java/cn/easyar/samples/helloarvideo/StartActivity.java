@@ -31,6 +31,7 @@ import cn.easyar.samples.helloarvideo.utils.dialog.DialogServer;
 import cn.easyar.samples.helloarvideo.utils.file.FileUtil;
 import cn.easyar.samples.helloarvideo.utils.log.CLog;
 import cn.easyar.samples.helloarvideo.utils.log.TimeUtil;
+import cn.easyar.samples.helloarvideo.utils.shotbitmap.ShotCurrentView;
 import fm.jiecao.jcvideoplayer_lib.JCVideoPlayer;
 import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
 
@@ -52,7 +53,6 @@ public class StartActivity extends AppCompatActivity{
 	private ArDataSheet mArDataSheet;
 	private DialogServer mDialogServer;
 	private String VideoPath;
-
 
 
 
@@ -111,8 +111,12 @@ public class StartActivity extends AppCompatActivity{
 //						mVideo.startButton.performClick();
 //					}c
 //				if (mVideo.currentState == JCVideoPlayer.CURRENT_STATE_PAUSE) {
-					int time = mVideo.getCurrentPositionWhenPlaying();
-					getBitmapsFromVideo(time * 1000);
+//					int time = mVideo.getCurrentPositionWhenPlaying();
+//					getBitmapsFromVideo(time * 1000);
+
+					getBitmapsFromView(mVideo);
+
+
 //					}
 					break;
 				case R.id.scanPhoto:
@@ -213,6 +217,35 @@ public class StartActivity extends AppCompatActivity{
 		}
 
 	}
+
+
+	public void getBitmapsFromView(View view) {
+		MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+		if(mUri==null&&VideoPath==null){
+
+		}
+		else {
+			if(mUri==null){
+				retriever.setDataSource(VideoPath, new HashMap<String, String>());
+
+			}else {
+				retriever.setDataSource(mUri.toString(), new HashMap<String, String>());
+			}
+
+			Bitmap bitmap= ShotCurrentView.shot(view);
+			mShot.setImageBitmap(bitmap);
+//			String path = FileUtil.sdcard.getFullPath(DIR, "" + TimeUtil.getCurrentTime() + ".jpg");
+//			saveBitmap(bitmap, path);
+//			if(mUri==null){
+//				mArDataSheet.add(path,VideoPath);
+//			}
+//			else {
+//				mArDataSheet.add(path, mUri.toString());
+//			}
+		}
+
+	}
+
 
 
 	private void saveBitmap(Bitmap bitmap, String path) {
