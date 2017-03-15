@@ -1,0 +1,9 @@
+<resources>
+	<string name="app_name">AR Demo</string>
+
+	<string name="hello_world">Hello world!</string>
+	<string name="action_settings">Settings</string>
+	<string name="open_video">打开视频</string>
+	<string name="print_frame">打印当前画面</string>
+	<string name="scan_photo">扫描照片</string>
+</resources>
