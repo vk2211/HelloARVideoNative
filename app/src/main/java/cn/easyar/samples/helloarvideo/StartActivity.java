@@ -27,6 +27,7 @@ import java.util.HashMap;
 
 import cn.easyar.samples.helloarvideo.constant.RequestCode;
 import cn.easyar.samples.helloarvideo.utils.ArDataSheet;
+import cn.easyar.samples.helloarvideo.utils.ImageLoader;
 import cn.easyar.samples.helloarvideo.utils.dialog.DialogServer;
 import cn.easyar.samples.helloarvideo.utils.file.FileUtil;
 import cn.easyar.samples.helloarvideo.utils.log.CLog;
@@ -48,7 +49,7 @@ public class StartActivity extends AppCompatActivity{
 	View mPrintFrame;
 	View mScanPhoto;
 
-	private static final String DIR = "Yipai/ArDemo";
+	public static final String DIR = "Yipai/ArDemo";
 	private Uri mUri;
 	private ArDataSheet mArDataSheet;
 	private DialogServer mDialogServer;
@@ -111,10 +112,11 @@ public class StartActivity extends AppCompatActivity{
 //						mVideo.startButton.performClick();
 //					}c
 //				if (mVideo.currentState == JCVideoPlayer.CURRENT_STATE_PAUSE) {
-//					int time = mVideo.getCurrentPositionWhenPlaying();
-//					getBitmapsFromVideo(time * 1000);
 
-					getBitmapsFromView(mVideo);
+					int time = mVideo.getCurrentPositionWhenPlaying();
+					getBitmapsFromVideo(time*1000);
+
+//					getBitmapsFromView(mVideo);
 
 
 //					}
@@ -203,7 +205,9 @@ public class StartActivity extends AppCompatActivity{
 			String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
 			// 取得视频的长度(单位为秒)
 			int seconds = Integer.valueOf(time) / 1000;
-			Bitmap bitmap = retriever.getFrameAtTime(timeUs, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
+			//Bitmap bitmap = retriever.getFrameAtTime(timeUs, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
+			Bitmap bitmap = retriever.getFrameAtTime(timeUs, MediaMetadataRetriever.OPTION_CLOSEST);
+
 			mShot.setImageBitmap(bitmap);
 			String path = FileUtil.sdcard.getFullPath(DIR, "" + TimeUtil.getCurrentTime() + ".jpg");
 			saveBitmap(bitmap, path);
@@ -217,37 +221,6 @@ public class StartActivity extends AppCompatActivity{
 		}
 
 	}
-
-
-	public void getBitmapsFromView(View view) {
-		MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-		if(mUri==null&&VideoPath==null){
-
-		}
-		else {
-			if(mUri==null){
-				retriever.setDataSource(VideoPath, new HashMap<String, String>());
-
-			}else {
-				retriever.setDataSource(mUri.toString(), new HashMap<String, String>());
-			}
-
-			Bitmap bitmap= ShotCurrentView.shot(view);
-			mShot.setImageBitmap(bitmap);
-//			String path = FileUtil.sdcard.getFullPath(DIR, "" + TimeUtil.getCurrentTime() + ".jpg");
-//			saveBitmap(bitmap, path);
-//			if(mUri==null){
-//				mArDataSheet.add(path,VideoPath);
-//			}
-//			else {
-//				mArDataSheet.add(path, mUri.toString());
-//			}
-		}
-
-	}
-
-
-
 	private void saveBitmap(Bitmap bitmap, String path) {
 		try {
 			File file = new File(path);
