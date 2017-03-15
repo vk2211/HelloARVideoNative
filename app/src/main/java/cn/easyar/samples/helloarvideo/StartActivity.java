@@ -76,6 +76,7 @@ public class StartActivity extends AppCompatActivity{
 				    mVideo.setVisibility(View.VISIBLE);
 				    mVideo.startButton.performClick();
 				    mUri=null;
+
 			    }
 		}
 	};
