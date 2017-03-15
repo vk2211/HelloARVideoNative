@@ -54,6 +54,8 @@ public class StartActivity extends AppCompatActivity{
 	private String VideoPath;
 
 
+
+
 	/**
 	 * 选择对话框接口
 	 */
@@ -73,8 +75,9 @@ public class StartActivity extends AppCompatActivity{
 				    mVideo.backButton.setVisibility(View.INVISIBLE);
 				    mVideo.setVisibility(View.VISIBLE);
 				    mVideo.startButton.performClick();
+				    mUri=null;
 			    }
-                }
+		}
 	};
 
 
