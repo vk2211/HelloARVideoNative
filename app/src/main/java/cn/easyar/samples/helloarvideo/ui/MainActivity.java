@@ -4,7 +4,7 @@
  * and other countries for the augmented reality technology developed by VisionStar Information Technology (Shanghai) Co., Ltd.
  */
 
-package cn.easyar.samples.helloarvideo;
+package cn.easyar.samples.helloarvideo.ui;
 
 import android.app.Activity;
 import android.content.res.Configuration;
@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import cn.easyar.engine.EasyAR;
+import cn.easyar.samples.helloarvideo.R;
 import cn.easyar.samples.helloarvideo.utils.ArDataSheet;
 
 

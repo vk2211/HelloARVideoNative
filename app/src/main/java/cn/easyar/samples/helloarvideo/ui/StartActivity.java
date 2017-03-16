@@ -1,7 +1,5 @@
-package cn.easyar.samples.helloarvideo;
+package cn.easyar.samples.helloarvideo.ui;
 
-import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -11,32 +9,32 @@ import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DialogTitle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import com.jude.easyrecyclerview.EasyRecyclerView;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import cn.easyar.samples.helloarvideo.ui.adapter.itemcachedata.CacheAdapter;
+import cn.easyar.samples.helloarvideo.R;
 import cn.easyar.samples.helloarvideo.constant.RequestCode;
+import cn.easyar.samples.helloarvideo.ui.adapter.itemcachedata.ItemCacheData;
 import cn.easyar.samples.helloarvideo.utils.ArDataSheet;
-import cn.easyar.samples.helloarvideo.utils.ImageLoader;
 import cn.easyar.samples.helloarvideo.utils.dialog.DialogServer;
+import cn.easyar.samples.helloarvideo.utils.file.BitmapUtil;
 import cn.easyar.samples.helloarvideo.utils.file.FileUtil;
-import cn.easyar.samples.helloarvideo.utils.log.CLog;
 import cn.easyar.samples.helloarvideo.utils.log.TimeUtil;
-import cn.easyar.samples.helloarvideo.utils.shotbitmap.ShotCurrentView;
+
 import fm.jiecao.jcvideoplayer_lib.JCVideoPlayer;
 import fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard;
 
-public class StartActivity extends AppCompatActivity{
+
+public class StartActivity extends AppCompatActivity implements View.OnClickListener{
 	private static final String TAG = "StartActivity";
 	public static final String ACTION_MEDIA_SCANNER_SCAN_DIR = "android.intent.action.MEDIA_SCANNER_SCAN_DIR";
 	private JCVideoPlayer.JCAutoFullscreenListener sensorEventListener;
@@ -44,7 +42,6 @@ public class StartActivity extends AppCompatActivity{
 
 
 	JCVideoPlayerStandard mVideo;
-	ImageView mShot;
 	View mOpenVideo;
 	View mPrintFrame;
 	View mScanPhoto;
@@ -55,6 +52,12 @@ public class StartActivity extends AppCompatActivity{
 	private DialogServer mDialogServer;
 	private String VideoPath;
 
+	private CacheAdapter mCacheAdapter;
+	private EasyRecyclerView mShotImageRecycleView;
+	private Bitmap mShotBitmap;
+	private List<ItemCacheData> mShotImageList;
+	private List<Bitmap> mBitmapList;
+	private BitmapUtil mBitmapUtil;
 
 
 	/**
@@ -86,56 +89,9 @@ public class StartActivity extends AppCompatActivity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_start);
-		mVideo = (JCVideoPlayerStandard) findViewById(R.id.video);
-		mShot = (ImageView) findViewById(R.id.shot);
-		mOpenVideo = findViewById(R.id.openVideo);
-		mPrintFrame = findViewById(R.id.printFrame);
-		mScanPhoto = findViewById(R.id.scanPhoto);
+		InitStartActivity();
 
-		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-		sensorEventListener = new JCVideoPlayer.JCAutoFullscreenListener();
-
-		FileUtil.sdcard.createDir(DIR);
-		mDialogServer=new DialogServer(StartActivity.this,mydialogInterface);
-
-		mArDataSheet = new ArDataSheet(this);
-		View.OnClickListener onClickListener = new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				switch (view.getId()) {
-				case R.id.openVideo:
-
-					mDialogServer.showSingleChoiceDialog();
-					break;
-				case R.id.printFrame:
-//					if (mVideo.currentState == JCVideoPlayer.CURRENT_STATE_PLAYING) {
-//						mVideo.startButton.performClick();
-//					}c
-//				if (mVideo.currentState == JCVideoPlayer.CURRENT_STATE_PAUSE) {
-
-					int time = mVideo.getCurrentPositionWhenPlaying();
-					getBitmapsFromVideo(time*1000);
-
-//					getBitmapsFromView(mVideo);
-
-
-//					}
-					break;
-				case R.id.scanPhoto:
-					Intent it = new Intent(StartActivity.this, MainActivity.class);
-					Bundle bundle = new Bundle();
-//					it.putExtra("", )
-					startActivity(it);
-					break;
-				}
-
-			}
-		};
-		mOpenVideo.setOnClickListener(onClickListener);
-		mPrintFrame.setOnClickListener(onClickListener);
-		mScanPhoto.setOnClickListener(onClickListener);
 	}
-
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -157,6 +113,8 @@ public class StartActivity extends AppCompatActivity{
 			}
 		}
 	}
+
+
 
 //	public void onBackPressed() {
 //		if (JCVideoPlayer.backPress()) {
@@ -186,11 +144,10 @@ public class StartActivity extends AppCompatActivity{
 
 	}
 
+
+
 	public void getBitmapsFromVideo(long timeUs) {
 		MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-//		retriever.setDataSource(StartActivity.this, mUri);
-
-
 		if(mUri==null&&VideoPath==null){
 
 		}
@@ -201,40 +158,80 @@ public class StartActivity extends AppCompatActivity{
 			}else {
 				retriever.setDataSource(mUri.toString(), new HashMap<String, String>());
 			}
-			// 取得视频的长度(单位为毫秒)
-			String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-			// 取得视频的长度(单位为秒)
-			int seconds = Integer.valueOf(time) / 1000;
 			//Bitmap bitmap = retriever.getFrameAtTime(timeUs, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
 			Bitmap bitmap = retriever.getFrameAtTime(timeUs, MediaMetadataRetriever.OPTION_CLOSEST);
+			String path = FileUtil.sdcard.getFullPath(FileUtil.CACHE_DIR, "" + TimeUtil.getCurrentTime() + ".jpg");
 
-			mShot.setImageBitmap(bitmap);
-			String path = FileUtil.sdcard.getFullPath(DIR, "" + TimeUtil.getCurrentTime() + ".jpg");
-			saveBitmap(bitmap, path);
-			if(mUri==null){
-				mArDataSheet.add(path,VideoPath);
-			}
-			else {
-				mArDataSheet.add(path, mUri.toString());
-			}
+			Log.e("#######" ,path);
+			mBitmapUtil.saveBitmap(bitmap,path);
+			ItemCacheData itemCacheData=new ItemCacheData();
+			itemCacheData.setImagePath(path);
+			mCacheAdapter.add(itemCacheData);
+			mCacheAdapter.notifyDataSetChanged();
+
+//			mShot.setImageBitmap(bitmap);
+//			String path = FileUtil.sdcard.getFullPath(DIR, "" + TimeUtil.getCurrentTime() + ".jpg");
+//			saveBitmap(bitmap, path);
+//			if(mUri==null){
+//				mArDataSheet.add(path,VideoPath);
+//			}
+//			else {
+//				mArDataSheet.add(path, mUri.toString());
+//			}
 
 		}
 
 	}
-	private void saveBitmap(Bitmap bitmap, String path) {
-		try {
-			File file = new File(path);
-			FileOutputStream fos = new FileOutputStream(file);
-			bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-//			bitmap.recycle();
-			fos.close();
-		} catch (FileNotFoundException e) {
-			CLog.e(TAG, "File not found: " + e.getMessage());
-		} catch (IOException e) {
-			CLog.e(TAG, "Error accessing file: " + e.getMessage());
-		}
-		String dir = FileUtil.getDirectoryPath(DIR, false);
-		this.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(FileUtil.sdcard.createDir(DIR)))));
+
+
+	/**
+	 * 初始化
+	 */
+	private void InitStartActivity(){
+
+		mVideo = (JCVideoPlayerStandard) findViewById(R.id.video);
+
+		mOpenVideo = findViewById(R.id.openVideo);
+		mPrintFrame = findViewById(R.id.printFrame);
+		mScanPhoto = findViewById(R.id.scanPhoto);
+		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+		sensorEventListener = new JCVideoPlayer.JCAutoFullscreenListener();
+		FileUtil.sdcard.createDir(FileUtil.DIR);
+		FileUtil.sdcard.createDir(FileUtil.CACHE_DIR);
+		mDialogServer=new DialogServer(StartActivity.this,mydialogInterface);
+
+		mShotImageRecycleView=(EasyRecyclerView)this.findViewById(R.id.shotList);
+		mBitmapUtil=new BitmapUtil(StartActivity.this);
+		mCacheAdapter=new CacheAdapter(StartActivity.this);
+		mShotImageList=new ArrayList<ItemCacheData>();
+		mCacheAdapter.addAll(mShotImageList);
+		LinearLayoutManager m = new LinearLayoutManager(this);
+		m.setOrientation(LinearLayoutManager.VERTICAL);
+		mShotImageRecycleView.setLayoutManager(m);
+		mShotImageRecycleView.setAdapter(mCacheAdapter);
+
+		mArDataSheet = new ArDataSheet(this);
+		mOpenVideo.setOnClickListener(this);
+		mPrintFrame.setOnClickListener(this);
+		mScanPhoto.setOnClickListener(this);
 	}
 
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+			case R.id.openVideo:
+				mDialogServer.showSingleChoiceDialog();
+				break;
+			case R.id.printFrame:
+				int time = mVideo.getCurrentPositionWhenPlaying();
+				getBitmapsFromVideo(time * 1000);
+				break;
+
+			case R.id.scanPhoto:
+				Intent it = new Intent(StartActivity.this, MainActivity.class);
+				startActivity(it);
+				break;
+		}
+	}
 }

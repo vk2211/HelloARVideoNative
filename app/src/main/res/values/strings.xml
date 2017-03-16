@@ -6,4 +6,5 @@
 	<string name="open_video">打开视频</string>
 	<string name="print_frame">打印当前画面</string>
 	<string name="scan_photo">扫描照片</string>
+	<string name="string_print">打印</string>
 </resources>

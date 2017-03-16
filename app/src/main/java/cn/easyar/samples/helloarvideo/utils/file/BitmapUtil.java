@@ -1,79 +1,47 @@
 package cn.easyar.samples.helloarvideo.utils.file;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Environment;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import cn.easyar.samples.helloarvideo.StartActivity;
 import cn.easyar.samples.helloarvideo.utils.log.CLog;
 
 /**
- * Created by liuchuanliang on 2017/3/15.
+ * Created by liuchuanliang on 2017/3/16.
  */
 public class BitmapUtil {
-            private static final String TAG = FileUtil.class.getSimpleName();
-            public static String CacheImageName="CacheAR.png";
+
+
+            public static final String DIR = "Yipai/ArDemo";
+            public static final String CACHE_DIR="Yipai/Cache";
+            private Context mContext;
+
+            public  BitmapUtil(Context context){
+
+                        mContext=context;
+            }
 
 
 
-            /**
-             * 保存图片
-             *
-             * @param b           图片资源
-             * @param strFileName 图片名称
-             * @throws IOException
-             */
-            public static void saveARBitmap(Bitmap b, String strFileName) {
+            public void saveBitmap(Bitmap bitmap, String path) {
                         try {
-                                    File file = new File(Environment.getExternalStorageDirectory()+ "/"+StartActivity.DIR, strFileName);
-                                    if (!file.isDirectory()) {
-                                                file.createNewFile();
-                                    }
+                                    File file = new File(path);
                                     FileOutputStream fos = new FileOutputStream(file);
-                                    if (fos != null) {
-                                                b.compress(Bitmap.CompressFormat.PNG, 100, fos);
-                                                fos.flush();
-                                                fos.close();
-                                    }
+                                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+//			bitmap.recycle();
+                                    fos.close();
                         } catch (FileNotFoundException e) {
-                                    // TODO Auto-generated catch block
-                                    e.printStackTrace();
+                                    CLog.e(mContext.toString(), "File not found: " + e.getMessage());
                         } catch (IOException e) {
-                                    // TODO Auto-generated catch block
-                                    e.printStackTrace();
+                                    CLog.e(mContext.toString(), "Error accessing file: " + e.getMessage());
                         }
+                        String dir = FileUtil.getDirectoryPath(DIR, false);
+                        mContext.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(new File(FileUtil.sdcard.createDir(DIR)))));
             }
-
-            /**
-             * 读取图片
-             *
-             * @param strFileName 图片名称
-             * @return 图片内容
-             * @throws IOException
-             */
-            @SuppressWarnings("unused")
-            public static  Bitmap readARBitmap(String strFileName) {
-                        String path = Environment.getExternalStorageDirectory() +"/"+ StartActivity.DIR+"/" + strFileName;
-                        if (path != null) {
-                                    Bitmap bitmap = BitmapFactory.decodeFile(path);
-                                    return bitmap;
-                        } else
-                                    return null;
-
-            }
-
-            public static String  GetCacheImagePath(String ImageName){
-
-                        return Environment.getExternalStorageDirectory()+ StartActivity.DIR+"/"+ImageName;
-            }
-
-
-
 }

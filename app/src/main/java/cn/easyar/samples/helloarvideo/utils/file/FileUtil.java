@@ -21,6 +21,9 @@ public class FileUtil {
 	private static final String TAG = FileUtil.class.getSimpleName();
 	public static final SdcardFileUtil sdcard = new SdcardFileUtil();
 
+	public static final String DIR = "Yipai/ArDemo";
+	public static final String CACHE_DIR="Yipai/Cache";
+
 	/**
 	 * Whether the path specified is Directory
 	 *

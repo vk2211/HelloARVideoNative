@@ -10,7 +10,7 @@
 	android:paddingLeft="@dimen/activity_horizontal_margin"
 	android:paddingRight="@dimen/activity_horizontal_margin"
 	android:paddingTop="@dimen/activity_vertical_margin"
-	tools:context=".StartActivity">
+	tools:context=".ui.StartActivity">
 
 	<fm.jiecao.jcvideoplayer_lib.JCVideoPlayerStandard
 		android:id="@+id/video"
@@ -18,36 +18,45 @@
 		android:layout_height="200dp"
 		android:visibility="gone"/>
 
-	<TextView
-		android:id="@+id/openVideo"
-		android:layout_width="100dp"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="10dp"
-		android:drawableTop="@drawable/ic_movie"
-		android:gravity="center_horizontal"
-		android:text="@string/open_video"/>
+	<LinearLayout
+		android:layout_width="wrap_content"
+		android:layout_height="100dp"
+		android:orientation="horizontal"
+		android:gravity="center">
+		<TextView
+			android:id="@+id/openVideo"
+			android:layout_width="100dp"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="10dp"
+			android:drawableTop="@drawable/ic_movie"
+			android:gravity="center_horizontal"
+			android:text="@string/open_video"/>
 
-	<TextView
-		android:id="@+id/printFrame"
-		android:layout_width="100dp"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="10dp"
-		android:drawableTop="@drawable/ic_movie_frame"
-		android:gravity="center_horizontal"
-		android:text="@string/print_frame"/>
+		<TextView
+			android:id="@+id/printFrame"
+			android:layout_width="100dp"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="10dp"
+			android:drawableTop="@drawable/ic_movie_frame"
+			android:gravity="center_horizontal"
+			android:text="@string/print_frame"/>
 
-	<TextView
-		android:id="@+id/scanPhoto"
-		android:layout_width="100dp"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="10dp"
-		android:drawableTop="@drawable/ic_camera_scanner"
-		android:gravity="center_horizontal"
-		android:text="@string/scan_photo"/>
+		<TextView
+			android:id="@+id/scanPhoto"
+			android:layout_width="100dp"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="10dp"
+			android:drawableTop="@drawable/ic_camera_scanner"
+			android:gravity="center_horizontal"
+			android:text="@string/scan_photo"/>
+	</LinearLayout>
 
-	<ImageView
-		android:id="@+id/shot"
+
+
+	<com.jude.easyrecyclerview.EasyRecyclerView
+		android:id="@+id/shotList"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"/>
+		android:layout_height="match_parent"
+		android:layout_marginTop="20dp"/>
 
 </LinearLayout>
